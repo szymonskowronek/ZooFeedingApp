@@ -3,43 +3,42 @@ using ZooFeedingApp.Configuration;
 using ZooFeedingApp.Models;
 using ZooFeedingApp.Services.Interfaces;
 
-namespace ZooFeedingApp.Services.Implementations
+namespace ZooFeedingApp.Services.Implementations;
+
+public class CsvSpeciesProvider(IOptions<InputDataOptions> options) : ISpeciesProvider
 {
-    public class CsvSpeciesProvider(IOptions<InputDataOptions> options) : ISpeciesProvider
+    private readonly string _filePath = options.Value.AnimalsFilePath;
+
+    public async Task<IDictionary<string, AnimalSpecies>> GetDataAsync()
     {
-        private readonly string _filePath = options.Value.AnimalsFilePath;
+        var species = new Dictionary<string, AnimalSpecies>();
+        var lines = await File.ReadAllLinesAsync(_filePath);
 
-        public async Task<IDictionary<string, AnimalSpecies>> GetDataAsync()
+        foreach (var line in lines)
         {
-            var species = new Dictionary<string, AnimalSpecies>();
-            var lines = await File.ReadAllLinesAsync(_filePath);
+            var speciesParts = line.Split(';', StringSplitOptions.TrimEntries);
+            if (speciesParts.Length < 3) continue;
 
-            foreach (var line in lines)
+            string name = speciesParts[0];
+            double rate = double.Parse(speciesParts[1]);
+            string type = speciesParts[2].ToLower();
+
+            var animalType = type switch
             {
-                var speciesParts = line.Split(';', StringSplitOptions.TrimEntries);
-                if (speciesParts.Length < 3) continue;
+                "meat" => AnimalType.Carnivore,
+                "fruit" => AnimalType.Herbivore,
+                "both" => AnimalType.Omnivore,
+                _ => throw new Exception($"Unknown diet: {type}")
+            };
 
-                string name = speciesParts[0];
-                double rate = double.Parse(speciesParts[1]);
-                string type = speciesParts[2].ToLower();
-
-                var animalType = type switch
-                {
-                    "meat" => AnimalType.Carnivore,
-                    "fruit" => AnimalType.Herbivore,
-                    "both" => AnimalType.Omnivore,
-                    _ => throw new Exception($"Unknown diet: {type}")
-                };
-
-                double? meatPercent = null;
-                if(animalType == AnimalType.Omnivore && speciesParts.Length >= 4)
-                {
-                    meatPercent = double.Parse(speciesParts[3].Replace("%", ""));
-                }
-
-                species[name] = new AnimalSpecies(name, rate, animalType, meatPercent);
+            double? meatPercent = null;
+            if(animalType == AnimalType.Omnivore && speciesParts.Length >= 4)
+            {
+                meatPercent = double.Parse(speciesParts[3].Replace("%", ""));
             }
-            return species;
+
+            species[name] = new AnimalSpecies(name, rate, animalType, meatPercent);
         }
+        return species;
     }
 }

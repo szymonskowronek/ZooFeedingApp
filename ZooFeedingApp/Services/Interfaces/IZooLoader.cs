@@ -1,8 +1,7 @@
 using ZooFeedingApp.Models;
 
-namespace ZooFeedingApp.Services.Interfaces
+namespace ZooFeedingApp.Services.Interfaces;
+
+public interface IZooLoader : IDataProvider<IEnumerable<ZooAnimal>>
 {
-    public interface IZooLoader : IDataProvider<IEnumerable<ZooAnimal>>
-    {
-    }
 }

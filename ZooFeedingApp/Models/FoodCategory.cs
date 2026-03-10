@@ -1,8 +1,7 @@
-namespace ZooFeedingApp.Models
+namespace ZooFeedingApp.Models;
+
+public enum FoodCategory
 {
-    public enum FoodCategory
-    {
-        Meat,
-        Fruit
-    }
+    Meat,
+    Fruit
 }

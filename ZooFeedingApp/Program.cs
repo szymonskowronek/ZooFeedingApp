@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ZooFeedingApp.Configuration;
-using ZooFeedingApp.Services.Implementations;
+using ZooFeedingApp.Extensions;
 using ZooFeedingApp.Services.Interfaces;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -10,10 +10,7 @@ builder.Services.Configure<InputDataOptions>(
     builder.Configuration.GetSection("ZooData")
 );
 
-builder.Services.AddTransient<IPriceProvider, TextPriceProvider>();
-builder.Services.AddTransient<ISpeciesProvider, CsvSpeciesProvider>();
-builder.Services.AddTransient<IZooLoader, XmlZooLoader>();
-builder.Services.AddTransient<IFeedingCalculator, FeedingCalculator>();
+builder.Services.AddZooServices();
 
 using var host = builder.Build();
 

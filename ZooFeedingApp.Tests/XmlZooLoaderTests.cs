@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using ZooFeedingApp.Configuration;
@@ -38,7 +39,7 @@ public class XmlZooLoaderTests : BaseTest
         try
         {
             var options = Options.Create(new InputDataOptions { ZooFilePath = tempPath });
-            var loader = new XmlZooLoader(options, mockSpeciesRepo.Object);
+            var loader = new XmlZooLoader(options, mockSpeciesRepo.Object, NullLogger<XmlZooLoader>.Instance);
 
             // Act
             var result = (await loader.GetDataAsync()).ToList();
@@ -72,7 +73,7 @@ public class XmlZooLoaderTests : BaseTest
         await File.WriteAllTextAsync(tempPath, xmlContent);
 
         var options = Options.Create(new InputDataOptions { ZooFilePath = tempPath });
-        var loader = new XmlZooLoader(options, mockRepo.Object);
+        var loader = new XmlZooLoader(options, mockRepo.Object, NullLogger<XmlZooLoader>.Instance);
 
         //Act
         var result = await loader.GetDataAsync();

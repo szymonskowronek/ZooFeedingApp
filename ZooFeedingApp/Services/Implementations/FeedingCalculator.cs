@@ -1,39 +1,38 @@
 using ZooFeedingApp.Models;
 using ZooFeedingApp.Services.Interfaces;
 
-namespace ZooFeedingApp.Services.Implementations
+namespace ZooFeedingApp.Services.Implementations;
+
+public class FeedingCalculator : IFeedingCalculator
 {
-    public class FeedingCalculator : IFeedingCalculator
+    public decimal CalculateTotalDailyCost(IEnumerable<ZooAnimal> animals, IDictionary<FoodCategory, decimal> prices)
     {
-        public decimal CalculateTotalDailyCost(IEnumerable<ZooAnimal> animals, IDictionary<FoodCategory, decimal> prices)
-        {
-            decimal totalCost = 0;
+        decimal totalCost = 0;
 
-            foreach (var animal in animals)
+        foreach (var animal in animals)
+        {
+            double totalFoodKg = animal.WeightKg * animal.AnimalSpecies.Rate;
+
+            totalCost += animal.AnimalSpecies.AnimalType switch
             {
-                double totalFoodKg = animal.WeightKg * animal.AnimalSpecies.Rate;
-
-                totalCost += animal.AnimalSpecies.AnimalType switch
-                {
-                    AnimalType.Carnivore => (decimal)totalFoodKg * prices[FoodCategory.Meat],
-                    AnimalType.Herbivore => (decimal)totalFoodKg * prices[FoodCategory.Fruit],
-                    AnimalType.Omnivore => CalculateOmnivoreCost(totalFoodKg, animal.AnimalSpecies, prices),
-                    _ => throw new ArgumentOutOfRangeException(nameof(animal.AnimalSpecies.AnimalType), "Unknown animal type")
-                };
-            }
-
-            return totalCost;
+                AnimalType.Carnivore => (decimal)totalFoodKg * prices[FoodCategory.Meat],
+                AnimalType.Herbivore => (decimal)totalFoodKg * prices[FoodCategory.Fruit],
+                AnimalType.Omnivore => CalculateOmnivoreCost(totalFoodKg, animal.AnimalSpecies, prices),
+                _ => throw new ArgumentOutOfRangeException(nameof(animal.AnimalSpecies.AnimalType), "Unknown animal type")
+            };
         }
 
-        private decimal CalculateOmnivoreCost(double totalFoodKg, AnimalSpecies animalSpecies, IDictionary<FoodCategory, decimal> prices)
-        {
-            double meatPercent = animalSpecies.MeatPercentage ?? 0;
-            double fruitPercent = 100 - meatPercent;
+        return totalCost;
+    }
 
-            decimal meatAmount = (decimal)(totalFoodKg * (meatPercent / 100));
-            decimal fruitAmount = (decimal)(totalFoodKg * (fruitPercent/ 100));
+    private decimal CalculateOmnivoreCost(double totalFoodKg, AnimalSpecies animalSpecies, IDictionary<FoodCategory, decimal> prices)
+    {
+        double meatPercent = animalSpecies.MeatPercentage ?? 0;
+        double fruitPercent = 100 - meatPercent;
 
-            return meatAmount * prices[FoodCategory.Meat] + fruitAmount * prices[FoodCategory.Fruit];
-        }
+        decimal meatAmount = (decimal)(totalFoodKg * (meatPercent / 100));
+        decimal fruitAmount = (decimal)(totalFoodKg * (fruitPercent/ 100));
+
+        return meatAmount * prices[FoodCategory.Meat] + fruitAmount * prices[FoodCategory.Fruit];
     }
 }

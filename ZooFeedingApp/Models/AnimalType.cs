@@ -1,9 +1,8 @@
-namespace ZooFeedingApp.Models
+namespace ZooFeedingApp.Models;
+
+public enum AnimalType
 {
-    public enum AnimalType
-    {
-        Carnivore,
-        Herbivore,
-        Omnivore
-    }
+    Carnivore,
+    Herbivore,
+    Omnivore
 }

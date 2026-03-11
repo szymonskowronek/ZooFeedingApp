@@ -1,7 +1,6 @@
-namespace ZooFeedingApp.Services.Interfaces
+namespace ZooFeedingApp.Services.Interfaces;
+
+public interface IDataProvider<T>
 {
-    public interface IDataProvider<T>
-    {
-        Task<T> GetDataAsync();
-    }
+    Task<T> GetDataAsync();
 }

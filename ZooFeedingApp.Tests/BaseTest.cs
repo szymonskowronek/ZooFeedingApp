@@ -1,24 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+namespace ZooFeedingApp.Tests;
 
-namespace ZooFeedingApp.Tests
+public abstract class BaseTest
 {
-    public abstract class BaseTest
+    protected string CreateTempPath(string extension)
     {
-        protected string CreateTempPath(string extension)
-        {
-            if (!extension.StartsWith(".")) extension = "." + extension;
+        if (!extension.StartsWith(".")) extension = "." + extension;
 
-            string path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}{extension}");
+        string path = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}{extension}");
 
-            return path;
-        }
+        return path;
+    }
 
-        protected void DeleteTempFile(string tempPath)
-        {
-            if (File.Exists(tempPath)) File.Delete(tempPath);
-        }
+    protected void DeleteTempFile(string tempPath)
+    {
+        if (File.Exists(tempPath)) File.Delete(tempPath);
     }
 }
